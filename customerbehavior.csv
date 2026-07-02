@@ -1,0 +1,64 @@
+-- Step 1: Select your database
+USE ecommerce;
+
+-- Step 2: View table structure
+DESCRIBE eecustomer;
+
+-- Step 3: Preview first 10 rows
+SELECT * FROM eecustomer LIMIT 10;
+
+-- Step 4: Count total customers
+SELECT COUNT(*) AS total_customers FROM eecustomer;
+
+-- Step 5: Count customers by gender
+SELECT gender, COUNT(*) AS total_customers
+FROM eecustomer
+GROUP BY gender
+ORDER BY total_customers DESC;
+
+-- Step 6: Average annual income by gender
+SELECT gender, AVG(annual_income_k$) AS avg_income
+FROM eecustomer
+GROUP BY gender
+ORDER BY avg_income DESC;
+
+-- Step 7: Average spending score by gender
+SELECT gender, AVG(spending_score) AS avg_spending
+FROM eecustomer
+GROUP BY gender
+ORDER BY avg_spending DESC;
+
+-- Step 8: Age group segmentation
+SELECT 
+    CASE 
+        WHEN age < 25 THEN 'Under 25'
+        WHEN age BETWEEN 25 AND 40 THEN '25–40'
+        WHEN age BETWEEN 41 AND 60 THEN '41–60'
+        ELSE 'Above 60'
+    END AS age_group,
+    COUNT(*) AS total_customers,
+    AVG(spending_score) AS avg_spending
+FROM eecustomer
+GROUP BY age_group
+ORDER BY avg_spending DESC;
+
+-- Step 9: Top 10 customers by spending score
+SELECT customer_id, age, gender, annual_income_k$, spending_score
+FROM eecustomer
+ORDER BY spending_score DESC
+LIMIT 10;
+
+-- Step 10: Check for missing values
+SELECT 
+    SUM(CASE WHEN customer_id IS NULL THEN 1 ELSE 0 END) AS missing_customer_id,
+    SUM(CASE WHEN age IS NULL THEN 1 ELSE 0 END) AS missing_age,
+    SUM(CASE WHEN gender IS NULL THEN 1 ELSE 0 END) AS missing_gender,
+    SUM(CASE WHEN annual_income_k$ IS NULL THEN 1 ELSE 0 END) AS missing_income,
+    SUM(CASE WHEN spending_score IS NULL THEN 1 ELSE 0 END) AS missing_spending
+FROM eecustomer;
+
+-- Step 11: Check for duplicate customer IDs
+SELECT customer_id, COUNT(*) AS duplicate_count
+FROM eecustomer
+GROUP BY customer_id
+HAVING COUNT(*) > 1;
